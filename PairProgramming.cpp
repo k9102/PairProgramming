@@ -1,7 +1,7 @@
 // PairProgramming.cpp : Defines the entry point for the console application.
 //
 
-#if defined (_MSC_VER)
+#if defined(_MSC_VER)
 #include "stdafx.h"
 #endif
 
@@ -22,64 +22,55 @@ enum
     UP
 };
 
-void traverse(vector<vector<int>> &maze)
+int cur_val = 0;
+void traverse(vector<vector<int>> &maze, int cur_x, int cur_y, int cur_dir, int try_num)
 {
-    int cur_dir = RIGHT;
-    int cur_x = -1, cur_y = 0, cur_val = 0;
     int row = maze.size();
     int col = maze[0].size();
 
-    while (true)
+    if(MAXDIR <= try_num) return;
+
+    int next_x = cur_x, next_y = cur_y;
+    switch (cur_dir)
     {
-        int i;
-        for (i = 0; i < MAXDIR; i++)
-        {
-            int next_x = cur_x, next_y = cur_y;
-            switch (cur_dir)
-            {
-            case RIGHT:
-                next_x++;
-                break;
-            case DOWN:
-                next_y++;
-                break;
-            case LEFT:
-                next_x--;
-                break;
-            case UP:
-                next_y--;
-                break;
-            }
+    case RIGHT:
+        next_x++;
+        break;
+    case DOWN:
+        next_y++;
+        break;
+    case LEFT:
+        next_x--;
+        break;
+    case UP:
+        next_y--;
+        break;
+    }
 
-            if (
-                next_x < 0 || next_x >= col ||
-                next_y < 0 || next_y >= row ||
-                maze[next_y][next_x] != EMPTY)
-            {
-                cur_dir = (cur_dir + 1) % 4;
-            }
-            else
-            {
-                cur_x = next_x;
-                cur_y = next_y;
-                maze[cur_y][cur_x] = cur_val++;
-                break;
-            }
-        } /*for*/
-
-        if (i == MAXDIR)
-            break;
-    } /*while*/
+    if (
+        next_x < 0 || next_x >= col ||
+        next_y < 0 || next_y >= row ||
+        maze[next_y][next_x] != EMPTY)
+    {
+ 
+        traverse(maze, cur_x, cur_y, (cur_dir + 1) % MAXDIR, try_num+1);
+    
+    }
+    else
+    {
+        maze[next_y][next_x] = cur_val++;
+        traverse(maze, next_x, next_y, cur_dir,0);
+    }
 }
 
 int main()
 {
     int row, col;
     int obs_num;
-    
+
     cin >> col >> row;
 
-    vector<vector<int>> maze(row,vector<int>(col,EMPTY));
+    vector<vector<int>> maze(row, vector<int>(col, EMPTY));
 
     cin >> obs_num;
 
@@ -91,7 +82,7 @@ int main()
         maze[y][x] = OBS;
     }
 
-    traverse(maze);
+    traverse(maze, -1, 0, RIGHT,0);
 
     for (int y = 0; y < row; y++)
     {
