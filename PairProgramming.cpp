@@ -39,31 +39,6 @@ class SpiralMatrix
             maze_[y][x] = OBS;
         }
     }
-    void Print()
-    {
-        for (int y = 0; y < row_; y++)
-        {
-            for (int x = 0; x < col_; x++)
-            {
-                int val = maze_[y][x];
-                if (val == EMPTY)
-                {
-                    cout << "\t"
-                         << "-";
-                }
-                else if (val == OBS)
-                {
-                    cout << "\t"
-                         << "x";
-                }
-                else
-                {
-                    cout << "\t" << val;
-                }
-            }
-            cout << "\n";
-        }
-    }
     void Traverse(int cur_x, int cur_y, int cur_dir, int trial_num)
     {
         if (MAXTRY <= trial_num)
@@ -100,7 +75,35 @@ class SpiralMatrix
             Traverse(next_x, next_y, cur_dir, 0);
         }
     }
+    friend ostream &operator<<(ostream &os, const SpiralMatrix &smat);
 };
+
+ostream &operator<<(ostream &os, const SpiralMatrix &s)
+{
+    for (int y = 0; y < s.row_; y++)
+    {
+        for (int x = 0; x < s.col_; x++)
+        {
+            int val = s.maze_[y][x];
+            if (val == EMPTY)
+            {
+                cout << "\t"
+                     << "-";
+            }
+            else if (val == OBS)
+            {
+                cout << "\t"
+                     << "x";
+            }
+            else
+            {
+                cout << "\t" << val;
+            }
+        }
+        cout << "\n";
+    }
+    return os;
+}
 
 int main()
 {
@@ -120,10 +123,10 @@ int main()
     }
 
     SpiralMatrix smat(col, row, obstacle);
-    smat.Print();
+    
+    cout << smat;
     smat.Traverse(-1, 0, RIGHT, 0);
-
-    smat.Print();
+    cout << smat;
 
     return 0;
 }
