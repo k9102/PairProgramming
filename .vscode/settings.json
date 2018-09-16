@@ -3,5 +3,7 @@
         "__functional_03": "cpp",
         "functional": "cpp",
         "iostream": "cpp"
-    }
+    },
+    "editor.fontLigatures": true,
+    "editor.fontFamily": "'Fira Code',Menlo, Monaco, 'Courier New', monospace"
 }

@@ -34,11 +34,16 @@ class SpiralMatrix
     SpiralMatrix(int col, int row, const vector<pair<int, int>> &obstacle) : maze_(row, vector<int>(col, EMPTY)),
                                                                              col_(col), row_(row)
     {
-        for (auto [x, y] : obstacle)
+        for (const auto& [x, y] : obstacle)
         {
             maze_[y][x] = OBS;
         }
     }
+    bool IsBlocked(int x, int y)
+    {
+        return x < 0 || x >= col_ || y < 0 || y >= row_ || EMPTY != maze_[y][x];
+    }
+
     void Traverse(int cur_x, int cur_y, int cur_dir, int trial_num)
     {
         if (MAXTRY <= trial_num)
@@ -61,12 +66,8 @@ class SpiralMatrix
             break;
         }
 
-        if (
-            next_x < 0 || next_x >= col_ ||
-            next_y < 0 || next_y >= row_ ||
-            maze_[next_y][next_x] != EMPTY)
+        if (IsBlocked(next_x, next_y))
         {
-
             Traverse(cur_x, cur_y, (cur_dir + 1) % MAXDIR, trial_num + 1);
         }
         else
@@ -123,7 +124,7 @@ int main()
     }
 
     SpiralMatrix smat(col, row, obstacle);
-    
+
     cout << smat;
     smat.Traverse(-1, 0, RIGHT, 0);
     cout << smat;
