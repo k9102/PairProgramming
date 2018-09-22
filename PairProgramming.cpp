@@ -23,6 +23,8 @@ enum
     MAXDIR
 };
 
+using Point = pair<int, int>;
+
 class SpiralMatrix
 {
   private:
@@ -30,52 +32,68 @@ class SpiralMatrix
     int col_, row_;
     vector<vector<int>> maze_;
 
-  public:
-    SpiralMatrix(int col, int row, const vector<pair<int, int>> &obstacle) : maze_(row, vector<int>(col, EMPTY)),
-                                                                             col_(col), row_(row)
-    {
-        for (const auto& [x, y] : obstacle)
-        {
-            maze_[y][x] = OBS;
-        }
-    }
     bool IsBlocked(int x, int y)
     {
         return x < 0 || x >= col_ || y < 0 || y >= row_ || EMPTY != maze_[y][x];
     }
 
-    void Traverse(int cur_x, int cur_y, int cur_dir, int trial_num)
+    Point MoveNext(int cur_x, int cur_y, int cur_dir)
     {
-        if (MAXTRY <= trial_num)
-            return;
-
-        int next_x = cur_x, next_y = cur_y;
         switch (cur_dir)
         {
         case RIGHT:
-            next_x++;
+            cur_x++;
             break;
         case DOWN:
-            next_y++;
+            cur_y++;
             break;
         case LEFT:
-            next_x--;
+            cur_x--;
             break;
         case UP:
-            next_y--;
+            cur_y--;
             break;
         }
+        return {cur_x, cur_y};
+    }
 
-        if (IsBlocked(next_x, next_y))
+  public:
+    SpiralMatrix(int col, int row, const vector<pair<int, int>> &obstacle) : maze_(row, vector<int>(col, EMPTY)),
+                                                                             col_(col), row_(row)
+    {
+        for (const auto &[x, y] : obstacle)
         {
-            Traverse(cur_x, cur_y, (cur_dir + 1) % MAXDIR, trial_num + 1);
-        }
-        else
-        {
-            maze_[next_y][next_x] = cur_val_++;
-            Traverse(next_x, next_y, cur_dir, 0);
+            maze_[y][x] = OBS;
         }
     }
+
+    void Traverse(int cur_x, int cur_y, int cur_dir)
+    {
+        while (true)
+        {
+            int i;
+            for (i = 0; i < MAXTRY; i++)
+            {
+                int next_x, next_y;
+                tie(next_x, next_y) = MoveNext(cur_x, cur_y, cur_dir);
+                if (IsBlocked(next_x, next_y))
+                {
+                    cur_dir = (cur_dir + 1) % MAXDIR;
+                }
+                else
+                {
+                    cur_x = next_x;
+                    cur_y = next_y;
+                    maze_[cur_y][cur_x] = ++cur_val_;
+                    break;
+                }
+            } /*for*/
+
+            if (i == MAXDIR)
+                break;
+        } /*while*/
+    }
+
     friend ostream &operator<<(ostream &os, const SpiralMatrix &smat);
 };
 
@@ -110,14 +128,15 @@ int main()
 {
     int row, col;
     int obs_num;
-    vector<pair<int, int>> obstacle;
 
     cin >> col >> row;
     cin >> obs_num;
 
-    int x, y;
+    vector<Point> obstacle;
+
     for (int i = 0; i < obs_num; i++)
     {
+        int x, y;
         cin >> x >> y;
 
         obstacle.emplace_back(x, y);
@@ -126,7 +145,7 @@ int main()
     SpiralMatrix smat(col, row, obstacle);
 
     cout << smat;
-    smat.Traverse(-1, 0, RIGHT, 0);
+    smat.Traverse(-1, 0, RIGHT);
     cout << smat;
 
     return 0;
