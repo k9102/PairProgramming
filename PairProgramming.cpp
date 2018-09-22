@@ -23,7 +23,19 @@ enum
     MAXDIR
 };
 
-using Point = pair<int, int>;
+using Point = tuple<int, int>;
+
+template <typename T, size_t... t>
+auto AddImpl(T left, T right, index_sequence<t...>)
+{
+    return T{get<t>(left) + get<t>(right)...};
+}
+
+template <typename... T>
+tuple<T...> operator+(tuple<T...> left, tuple<T...> right)
+{
+    return AddImpl(left, right, index_sequence_for<T...>());
+}
 
 class SpiralMatrix
 {
@@ -37,29 +49,16 @@ class SpiralMatrix
         return x < 0 || x >= col_ || y < 0 || y >= row_ || EMPTY != maze_[y][x];
     }
 
-    Point MoveNext(int cur_x, int cur_y, int cur_dir)
+    Point MoveNext(Point cur_pos, int cur_dir)
     {
-        switch (cur_dir)
-        {
-        case RIGHT:
-            cur_x++;
-            break;
-        case DOWN:
-            cur_y++;
-            break;
-        case LEFT:
-            cur_x--;
-            break;
-        case UP:
-            cur_y--;
-            break;
-        }
-        return {cur_x, cur_y};
+        constexpr Point offset[] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+        return cur_pos + offset[cur_dir];
     }
 
   public:
-    SpiralMatrix(int col, int row, const vector<pair<int, int>> &obstacle) : maze_(row, vector<int>(col, EMPTY)),
-                                                                             col_(col), row_(row)
+    SpiralMatrix(int col, int row, const vector<tuple<int, int>> &obstacle) : maze_(row, vector<int>(col, EMPTY)),
+                                                                              col_(col), row_(row)
     {
         for (const auto &[x, y] : obstacle)
         {
@@ -74,8 +73,7 @@ class SpiralMatrix
             int i;
             for (i = 0; i < MAXTRY; i++)
             {
-                int next_x, next_y;
-                tie(next_x, next_y) = MoveNext(cur_x, cur_y, cur_dir);
+                auto [next_x, next_y] = MoveNext({cur_x, cur_y}, cur_dir);
                 if (IsBlocked(next_x, next_y))
                 {
                     cur_dir = (cur_dir + 1) % MAXDIR;
