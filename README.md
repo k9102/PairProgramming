@@ -12,11 +12,15 @@ The maxtrix is filled in a sprial way like below.
 If there is a block,the filling direction is changed in the clockwise direction.
 
 ## Usage
+
 ### Input
-- 5 5 :matrix size
-- 2   :block number
-- 3 3 :the first block position
-- 2 2 :the second block position
+| input | meaning    					|
+| ----- | -------    					|
+| 5 5   |matrix size(row,col)			|
+| 2     |block number					|
+| 3 3   |the first block position(x,y)	|
+| 2 2 	|the second block position(x,y) |
+
 ### Result
 	-	-	-	-	-
 	-	-	-	-	-
