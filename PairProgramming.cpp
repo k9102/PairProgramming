@@ -87,7 +87,7 @@ class SpiralMatrix
                 }
             } /*for*/
 
-            if (i == MAXDIR)
+            if (i == MAXTRY)
                 break;
         } /*while*/
     }
